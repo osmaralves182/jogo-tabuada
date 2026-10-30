@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo da Tabuada</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Tela 1: seleção de tabuadas -->
+  <section id="tela-selecao" class="tela ativa">
+    <h1>🎲 Jogo da Tabuada</h1>
+
+    <p>Qual operação você quer praticar?</p>
+    <div class="grade-operacao" id="grade-operacao">
+      <div class="opcao-operacao">
+        <input type="radio" name="operacao" id="operacao-soma" value="soma">
+        <label for="operacao-soma">➕ Adição</label>
+      </div>
+      <div class="opcao-operacao">
+        <input type="radio" name="operacao" id="operacao-subtracao" value="subtracao">
+        <label for="operacao-subtracao">➖ Subtração</label>
+      </div>
+      <div class="opcao-operacao">
+        <input type="radio" name="operacao" id="operacao-multiplicacao" value="multiplicacao" checked>
+        <label for="operacao-multiplicacao">✖️ Multiplicação</label>
+      </div>
+      <div class="opcao-operacao">
+        <input type="radio" name="operacao" id="operacao-divisao" value="divisao">
+        <label for="operacao-divisao">➗ Divisão</label>
+      </div>
+    </div>
+
+    <p>Escolha quais tabuadas você quer praticar:</p>
+
+    <div class="grade-tabuadas" id="grade-tabuadas"></div>
+
+    <button id="btn-selecionar-todas" class="botao-secundario">Selecionar todas</button>
+
+    <p>Quantas vidas você quer?</p>
+    <div class="grade-vidas" id="grade-vidas">
+      <div class="opcao-vidas">
+        <input type="radio" name="vidas" id="vidas-3" value="3" checked>
+        <label for="vidas-3">❤️ 3</label>
+      </div>
+      <div class="opcao-vidas">
+        <input type="radio" name="vidas" id="vidas-6" value="6">
+        <label for="vidas-6">❤️ 6</label>
+      </div>
+      <div class="opcao-vidas">
+        <input type="radio" name="vidas" id="vidas-9" value="9">
+        <label for="vidas-9">❤️ 9</label>
+      </div>
+    </div>
+
+    <p>Qual a dificuldade?</p>
+    <div class="grade-dificuldade" id="grade-dificuldade">
+      <div class="opcao-dificuldade">
+        <input type="radio" name="dificuldade" id="dificuldade-facil" value="facil" checked>
+        <label for="dificuldade-facil">🙂 Fácil</label>
+      </div>
+      <div class="opcao-dificuldade">
+        <input type="radio" name="dificuldade" id="dificuldade-medio" value="medio">
+        <label for="dificuldade-medio">😐 Médio</label>
+      </div>
+      <div class="opcao-dificuldade">
+        <input type="radio" name="dificuldade" id="dificuldade-dificil" value="dificil">
+        <label for="dificuldade-dificil">😰 Difícil</label>
+      </div>
+    </div>
+
+    <button id="btn-comecar" class="botao-principal" disabled>Começar Jogo</button>
+  </section>
+
+  <!-- Tela 2: carta do jogo -->
+  <section id="tela-jogo" class="tela">
+    <button id="btn-encerrar" class="botao-encerrar">Encerrar</button>
+
+    <div class="placar-topo">
+      <span>⭐ <span id="placar-pontos">0</span></span>
+      <span id="cronometro">⏱ 0</span>
+    </div>
+
+    <div class="coracoes-topo" id="coracoes-topo"></div>
+
+    <div class="cena-carta">
+      <div class="card" id="card">
+        <div class="card-inner" id="card-inner">
+          <div class="card-face card-front">
+            <span id="texto-operacao">? × ?</span>
+          </div>
+          <div class="card-face card-back">
+            <span id="texto-resposta">?</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p id="mensagem-tempo" class="mensagem-tempo escondido">⏰ Tempo esgotado!</p>
+
+    <button id="btn-revelar" class="botao-principal">Revelar</button>
+    <button id="btn-continuar" class="botao-principal escondido">Continuar</button>
+
+    <div id="botoes-resposta" class="botoes-resposta escondido">
+      <button id="btn-acertei" class="botao-acertei">✅ Acertei</button>
+      <button id="btn-errei" class="botao-errei">❌ Errei</button>
+    </div>
+  </section>
+
+  <!-- Tela 3: resumo -->
+  <section id="tela-resumo" class="tela">
+    <h1 id="resumo-titulo">🏁 Fim de jogo!</h1>
+    <div class="resumo-caixa">
+      <p>Pontuação: <strong id="resumo-pontos">0</strong></p>
+      <p>Acertos: <strong id="resumo-acertos">0</strong></p>
+      <p>Erros: <strong id="resumo-erros">0</strong></p>
+      <p>Cartas treinadas: <strong id="resumo-cartas">0</strong></p>
+    </div>
+    <button id="btn-jogar-de-novo" class="botao-principal">Jogar de novo</button>
+  </section>
+
+  <script src="js/cards.js"></script>
+  <script src="js/score.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

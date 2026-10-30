@@ -1,0 +1,393 @@
+:root {
+  --cor-fundo: #2b2d6e;
+  --cor-fundo-2: #4a3f9e;
+  --cor-destaque: #ffcc33;
+  --cor-acerto: #34c759;
+  --cor-erro: #ff5a5f;
+  --cor-texto: #ffffff;
+  --cor-carta-frente: #ffffff;
+  --cor-carta-verso: #ffcc33;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Comic Sans MS", "Segoe UI", Verdana, sans-serif;
+  background: linear-gradient(160deg, var(--cor-fundo), var(--cor-fundo-2));
+  color: var(--cor-texto);
+  text-align: center;
+}
+
+.tela {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 480px;
+  padding: 24px;
+  position: relative;
+}
+
+.tela.ativa {
+  display: flex;
+}
+
+h1 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Botões */
+
+.botao-principal,
+.botao-secundario,
+.botao-acertei,
+.botao-errei,
+.botao-encerrar {
+  font-family: inherit;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 16px;
+  padding: 16px 28px;
+  cursor: pointer;
+  min-width: 200px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.botao-principal:active,
+.botao-secundario:active,
+.botao-acertei:active,
+.botao-errei:active {
+  transform: scale(0.96);
+}
+
+.botao-principal {
+  background: var(--cor-destaque);
+  color: #3a2a00;
+}
+
+.botao-principal:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.botao-secundario {
+  background: transparent;
+  color: var(--cor-texto);
+  border: 2px solid var(--cor-texto);
+}
+
+.botao-acertei {
+  background: var(--cor-acerto);
+  color: #ffffff;
+}
+
+.botao-errei {
+  background: var(--cor-erro);
+  color: #ffffff;
+}
+
+.botao-encerrar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: transparent;
+  color: var(--cor-texto);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  min-width: auto;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+}
+
+/* Seleção de operação */
+
+.grade-operacao {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.opcao-operacao {
+  position: relative;
+}
+
+.opcao-operacao input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+.opcao-operacao label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  font-size: 1.05rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.opcao-operacao input:checked + label {
+  background: var(--cor-destaque);
+  color: #3a2a00;
+  border-color: var(--cor-destaque);
+}
+
+/* Seleção de tabuadas */
+
+.grade-tabuadas {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.opcao-tabuada {
+  position: relative;
+}
+
+.opcao-tabuada input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+.opcao-tabuada label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  font-size: 1.3rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.opcao-tabuada input:checked + label {
+  background: var(--cor-destaque);
+  color: #3a2a00;
+  border-color: var(--cor-destaque);
+}
+
+/* Seleção de vidas */
+
+.grade-vidas {
+  display: flex;
+  gap: 10px;
+}
+
+.opcao-vidas {
+  position: relative;
+}
+
+.opcao-vidas input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+.opcao-vidas label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.opcao-vidas input:checked + label {
+  background: var(--cor-destaque);
+  color: #3a2a00;
+  border-color: var(--cor-destaque);
+}
+
+/* Seleção de dificuldade */
+
+.grade-dificuldade {
+  display: flex;
+  gap: 10px;
+}
+
+.opcao-dificuldade {
+  position: relative;
+}
+
+.opcao-dificuldade input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+.opcao-dificuldade label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  font-size: 1.05rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#dificuldade-facil:checked + label {
+  background: var(--cor-acerto);
+  color: #ffffff;
+  border-color: var(--cor-acerto);
+}
+
+#dificuldade-medio:checked + label {
+  background: var(--cor-destaque);
+  color: #3a2a00;
+  border-color: var(--cor-destaque);
+}
+
+#dificuldade-dificil:checked + label {
+  background: var(--cor-erro);
+  color: #ffffff;
+  border-color: var(--cor-erro);
+}
+
+/* Placar no topo do jogo */
+
+.placar-topo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+#cronometro.tempo-critico {
+  color: var(--cor-erro);
+}
+
+.coracoes-topo {
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+}
+
+.coracoes-topo .coracao-perdido {
+  opacity: 0.25;
+}
+
+.mensagem-tempo {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--cor-erro);
+}
+
+/* Carta com flip 3D */
+
+.cena-carta {
+  perspective: 1200px;
+  width: 260px;
+  height: 260px;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.card-inner.virada {
+  transform: rotateY(180deg);
+}
+
+.card-inner.sem-transicao {
+  transition: none;
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  backface-visibility: hidden;
+  font-size: 2.6rem;
+  font-weight: bold;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.card-front {
+  background: var(--cor-carta-frente);
+  color: #2b2d6e;
+}
+
+.card-back {
+  background: var(--cor-carta-verso);
+  color: #3a2a00;
+  transform: rotateY(180deg);
+}
+
+.botoes-resposta {
+  display: flex;
+  gap: 12px;
+}
+
+.escondido {
+  display: none !important;
+}
+
+/* Resumo */
+
+.resumo-caixa {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px 32px;
+  font-size: 1.2rem;
+}
+
+.resumo-caixa p {
+  margin: 8px 0;
+}
