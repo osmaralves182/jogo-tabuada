@@ -35,6 +35,7 @@ function gerarCarta(tipoOperacao, tabuada, contador) {
 
   return {
     id: tipoOperacao + "-" + num1 + "-" + num2,
+    tipo: tipoOperacao,
     num1: num1,
     num2: num2,
     operacao: num1 + " " + simbolo + " " + num2,
@@ -57,4 +58,36 @@ function gerarBaralho(tipoOperacao, tabuadasSelecionadas) {
   }
 
   return baralho;
+}
+
+// Modo múltipla escolha: 4 opções embaralhadas (1 certa + 3 erradas).
+// As erradas são números "parecidos" com a certa, para ela não ficar óbvia:
+// vizinhos (±1, ±2, ±3) e, na multiplicação, vizinhos na tabuada (ex: 7×8 -> 49, 63, 48, 64).
+function gerarOpcoes(carta) {
+  var certa = carta.resposta;
+  var candidatas = [certa - 1, certa + 1, certa - 2, certa + 2, certa - 3, certa + 3];
+
+  if (carta.tipo === "multiplicacao") {
+    candidatas.push(certa - carta.num1, certa + carta.num1, certa - carta.num2, certa + carta.num2);
+  }
+
+  var erradas = [];
+  embaralhar(candidatas).forEach(function (numero) {
+    if (erradas.length < 3 && numero >= 0 && numero !== certa && erradas.indexOf(numero) === -1) {
+      erradas.push(numero);
+    }
+  });
+
+  return embaralhar([certa].concat(erradas));
+}
+
+function embaralhar(lista) {
+  var copia = lista.slice();
+  for (var i = copia.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = copia[i];
+    copia[i] = copia[j];
+    copia[j] = temp;
+  }
+  return copia;
 }

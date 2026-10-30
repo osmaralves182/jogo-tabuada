@@ -5,14 +5,17 @@ var estado = {
   cartaAtual: null,
   placar: null,
   dificuldade: null,
+  modo: "escolha",
   timerId: null,
-  tempoRestante: 0
+  tempoRestante: 0,
+  avancoId: null
 };
 
 var telaSelecao = document.getElementById("tela-selecao");
 var telaJogo = document.getElementById("tela-jogo");
 var telaResumo = document.getElementById("tela-resumo");
 
+var gradeModo = document.getElementById("grade-modo");
 var gradeOperacao = document.getElementById("grade-operacao");
 var gradeTabuadas = document.getElementById("grade-tabuadas");
 var btnSelecionarTodas = document.getElementById("btn-selecionar-todas");
@@ -25,7 +28,9 @@ var coracoesTopo = document.getElementById("coracoes-topo");
 var cronometro = document.getElementById("cronometro");
 var mensagemTempo = document.getElementById("mensagem-tempo");
 var cardInner = document.getElementById("card-inner");
+var perguntaPrefixo = document.getElementById("pergunta-prefixo");
 var textoOperacao = document.getElementById("texto-operacao");
+var opcoesResposta = document.getElementById("opcoes-resposta");
 var textoResposta = document.getElementById("texto-resposta");
 var btnRevelar = document.getElementById("btn-revelar");
 var btnContinuar = document.getElementById("btn-continuar");
@@ -82,6 +87,11 @@ function atualizarBotaoComecar() {
   btnComecar.disabled = tabuadasMarcadas().length === 0;
 }
 
+function modoEscolhido() {
+  var selecionado = gradeModo.querySelector("input[name=modo]:checked");
+  return selecionado ? selecionado.value : "escolha";
+}
+
 function operacaoEscolhida() {
   var selecionado = gradeOperacao.querySelector("input[name=operacao]:checked");
   return selecionado ? selecionado.value : "multiplicacao";
@@ -127,7 +137,11 @@ function atualizarTextoCronometro() {
 }
 
 function tempoEsgotado() {
-  cardInner.classList.add("virada");
+  if (estado.modo === "escolha") {
+    marcarOpcaoCerta();
+  } else {
+    cardInner.classList.add("virada");
+  }
   btnRevelar.classList.add("escondido");
   botoesResposta.classList.add("escondido");
   mensagemTempo.classList.remove("escondido");
@@ -139,6 +153,55 @@ btnContinuar.addEventListener("click", function () {
   btnContinuar.classList.add("escondido");
   responder(false);
 });
+
+function montarOpcoes() {
+  opcoesResposta.innerHTML = "";
+
+  gerarOpcoes(estado.cartaAtual).forEach(function (numero) {
+    var botao = document.createElement("button");
+    botao.className = "botao-opcao";
+    botao.textContent = numero;
+    botao.addEventListener("click", function () {
+      escolherOpcao(botao, numero);
+    });
+    opcoesResposta.appendChild(botao);
+  });
+
+  opcoesResposta.classList.remove("escondido");
+}
+
+// Trava todas as opções e pinta a certa de verde.
+function marcarOpcaoCerta() {
+  opcoesResposta.querySelectorAll(".botao-opcao").forEach(function (botao) {
+    botao.disabled = true;
+    if (Number(botao.textContent) === estado.cartaAtual.resposta) {
+      botao.classList.add("opcao-certa");
+    }
+  });
+}
+
+function escolherOpcao(botao, numero) {
+  pararCronometro();
+  var acertou = numero === estado.cartaAtual.resposta;
+
+  marcarOpcaoCerta();
+  if (!acertou) {
+    botao.classList.add("opcao-errada");
+  }
+
+  // Avança sozinho; no erro espera um pouco mais para dar tempo de ver a resposta certa.
+  estado.avancoId = setTimeout(function () {
+    estado.avancoId = null;
+    responder(acertou);
+  }, acertou ? 1000 : 2000);
+}
+
+function cancelarAvanco() {
+  if (estado.avancoId) {
+    clearTimeout(estado.avancoId);
+    estado.avancoId = null;
+  }
+}
 
 function verificarBonusDeVida() {
   var meta = estado.dificuldade.sequenciaParaVida;
@@ -175,6 +238,7 @@ btnComecar.addEventListener("click", function () {
   estado.baralho = gerarBaralho(operacaoEscolhida(), tabuadasMarcadas());
   estado.placar = criarPlacar(vidasEscolhidas());
   estado.dificuldade = dificuldadeEscolhida();
+  estado.modo = modoEscolhido();
   iniciarRodada();
   mostrarTela(telaJogo);
 });
@@ -189,9 +253,20 @@ function iniciarRodada() {
   cardInner.classList.remove("virada");
   void cardInner.offsetWidth; // força o navegador a aplicar o "sem-transicao" antes de tirar a classe
 
-  textoOperacao.textContent = estado.cartaAtual.operacao;
   textoResposta.textContent = estado.cartaAtual.resposta;
-  btnRevelar.classList.remove("escondido");
+
+  if (estado.modo === "escolha") {
+    perguntaPrefixo.classList.remove("escondido");
+    textoOperacao.textContent = estado.cartaAtual.operacao + "?";
+    btnRevelar.classList.add("escondido");
+    montarOpcoes();
+  } else {
+    perguntaPrefixo.classList.add("escondido");
+    textoOperacao.textContent = estado.cartaAtual.operacao;
+    btnRevelar.classList.remove("escondido");
+    opcoesResposta.classList.add("escondido");
+  }
+
   btnContinuar.classList.add("escondido");
   mensagemTempo.classList.add("escondido");
   botoesResposta.classList.add("escondido");
@@ -241,6 +316,7 @@ btnErrei.addEventListener("click", function () {
 
 btnEncerrar.addEventListener("click", function () {
   pararCronometro();
+  cancelarAvanco();
   mostrarResumo("manual");
 });
 

@@ -113,8 +113,9 @@ p {
   font-size: 0.9rem;
 }
 
-/* Seleção de operação */
+/* Seleção de modo de jogo e de operação (mesmo visual) */
 
+.grade-modo,
 .grade-operacao {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -122,10 +123,12 @@ p {
   width: 100%;
 }
 
+.opcao-modo,
 .opcao-operacao {
   position: relative;
 }
 
+.opcao-modo input,
 .opcao-operacao input {
   position: absolute;
   opacity: 0;
@@ -135,6 +138,7 @@ p {
   cursor: pointer;
 }
 
+.opcao-modo label,
 .opcao-operacao label {
   display: flex;
   align-items: center;
@@ -148,6 +152,7 @@ p {
   cursor: pointer;
 }
 
+.opcao-modo input:checked + label,
 .opcao-operacao input:checked + label {
   background: var(--cor-destaque);
   color: #3a2a00;
@@ -360,8 +365,54 @@ p {
 }
 
 .card-front {
+  flex-direction: column;
+  gap: 8px;
   background: var(--cor-carta-frente);
   color: #2b2d6e;
+}
+
+.pergunta-prefixo {
+  font-size: 1.2rem;
+  opacity: 0.6;
+}
+
+/* Opções do modo múltipla escolha */
+
+.opcoes-resposta {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.botao-opcao {
+  font-family: inherit;
+  font-size: 1.6rem;
+  font-weight: bold;
+  padding: 14px;
+  border: none;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #2b2d6e;
+  cursor: pointer;
+}
+
+.botao-opcao:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.botao-opcao.opcao-certa {
+  background: var(--cor-acerto);
+  color: #ffffff;
+  opacity: 1;
+}
+
+.botao-opcao.opcao-errada {
+  background: var(--cor-erro);
+  color: #ffffff;
+  opacity: 1;
 }
 
 .card-back {

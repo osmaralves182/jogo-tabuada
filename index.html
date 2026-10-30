@@ -12,6 +12,18 @@
   <section id="tela-selecao" class="tela ativa">
     <h1>🎲 Jogo da Tabuada</h1>
 
+    <p>Como você quer jogar?</p>
+    <div class="grade-modo" id="grade-modo">
+      <div class="opcao-modo">
+        <input type="radio" name="modo" id="modo-escolha" value="escolha" checked>
+        <label for="modo-escolha">🔘 Múltipla escolha</label>
+      </div>
+      <div class="opcao-modo">
+        <input type="radio" name="modo" id="modo-cartas" value="cartas">
+        <label for="modo-cartas">🃏 Cartas</label>
+      </div>
+    </div>
+
     <p>Qual operação você quer praticar?</p>
     <div class="grade-operacao" id="grade-operacao">
       <div class="opcao-operacao">
@@ -88,6 +100,7 @@
       <div class="card" id="card">
         <div class="card-inner" id="card-inner">
           <div class="card-face card-front">
+            <span id="pergunta-prefixo" class="pergunta-prefixo escondido">Quanto é</span>
             <span id="texto-operacao">? × ?</span>
           </div>
           <div class="card-face card-back">
@@ -98,6 +111,8 @@
     </div>
 
     <p id="mensagem-tempo" class="mensagem-tempo escondido">⏰ Tempo esgotado!</p>
+
+    <div id="opcoes-resposta" class="opcoes-resposta escondido"></div>
 
     <button id="btn-revelar" class="botao-principal">Revelar</button>
     <button id="btn-continuar" class="botao-principal escondido">Continuar</button>

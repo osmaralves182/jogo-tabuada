@@ -10,19 +10,25 @@ Este documento descreve **tudo que já foi implementado** até o momento.
 
 ## 1. Como jogar (visão geral)
 
-1. Na tela inicial, o jogador escolhe: a **operação**, quais **tabuadas** praticar, quantas
-   **vidas** quer ter e o nível de **dificuldade**.
-2. Uma carta aparece com uma operação (ex: `7 × 8`).
-3. O jogador pensa na resposta e clica em **Revelar** para virar a carta e ver o resultado.
-4. Depois de ver a resposta, o jogador clica em **✅ Acertei** ou **❌ Errei** (autoavaliação).
-5. O jogo ajusta pontuação, vidas e a chance daquela carta voltar a aparecer, e mostra a
-   próxima carta.
-6. O jogo termina quando o jogador clica em **Encerrar** ou quando as vidas acabam (Game Over).
-7. Uma tela de resumo mostra as estatísticas da partida, com opção de jogar de novo.
+1. Na tela inicial, o jogador escolhe: o **modo de jogo**, a **operação**, quais **tabuadas**
+   praticar, quantas **vidas** quer ter e o nível de **dificuldade**.
+2. Aparece uma pergunta com uma operação (ex: `7 × 8`).
+3. O jogador responde — de um jeito diferente em cada modo (seção 4):
+   - **Múltipla escolha**: escolhe uma entre 4 opções, e o jogo confere sozinho.
+   - **Cartas**: pensa na resposta, clica em **Revelar** para virar a carta e se autoavalia com
+     **✅ Acertei** ou **❌ Errei**.
+4. O jogo ajusta pontuação, vidas e a chance daquela pergunta voltar a aparecer, e mostra a
+   próxima.
+5. O jogo termina quando o jogador clica em **Encerrar** ou quando as vidas acabam (Game Over).
+6. Uma tela de resumo mostra as estatísticas da partida, com opção de jogar de novo.
 
 ---
 
 ## 2. Tela de seleção (início da partida)
+
+### 2.0 Modo de jogo
+- 🔘 **Múltipla escolha** (selecionado por padrão)
+- 🃏 **Cartas**
 
 ### 2.1 Operação
 Escolha única (não dá pra combinar operações na mesma partida):
@@ -66,12 +72,30 @@ Implementado em [js/cards.js](js/cards.js) (`gerarCarta`, `gerarBaralho`).
 
 ---
 
-## 4. A carta e o fluxo de resposta
+## 4. Modos de jogo e fluxo de resposta
 
+Os dois modos usam as mesmas perguntas, vidas, dificuldade, cronômetro, pontuação e repetição
+— só muda a forma de responder.
+
+### 4.1 Múltipla escolha
+- A pergunta aparece como **"Quanto é 7 × 8?"**, com **4 opções** de resposta logo abaixo.
+- Ao tocar numa opção, o cronômetro para, as opções travam e o jogo confere sozinho:
+  - a opção **certa fica verde**;
+  - se a escolhida estava errada, ela **fica vermelha** (e a certa continua verde, para a
+    criança ver qual era).
+- O jogo **avança sozinho** para a próxima pergunta: depois de 1 segundo no acerto, ou de
+  2 segundos no erro (mais tempo para ver a resposta certa).
+- **Como as 3 opções erradas são escolhidas** ([js/cards.js](js/cards.js), `gerarOpcoes`):
+  são números "parecidos" com a resposta, para ela não ficar óbvia — vizinhos (±1, ±2, ±3) e,
+  na multiplicação, também vizinhos na tabuada (ex: para `7 × 8 = 56`, pode aparecer `49`,
+  `63`, `48` ou `64`). Nunca aparecem opções repetidas nem negativas, e a posição da certa é
+  sorteada.
+
+### 4.2 Cartas
 - A carta tem **frente** (mostra a operação, ex: `7 × 8`) e **verso** (mostra a resposta, `56`),
   com uma **animação 3D de virar** ao clicar em "Revelar".
 - Depois de revelada, aparecem os botões **✅ Acertei** e **❌ Errei** — o jogador se
-  autoavalia, o jogo não confere a resposta digitada (é um exercício de conferência mental).
+  autoavalia, o jogo não confere a resposta (é um exercício de conferência mental).
 - Ao trocar de carta, ela volta pra frente **instantaneamente** (sem animação), só para não
   mostrar a resposta da carta nova por engano durante a troca.
 
@@ -113,14 +137,15 @@ para a próxima rodada — quanto maior a prioridade, maior a chance ([js/game.j
 
 ## 7. Cronômetro e tempo esgotado
 
-- Cada carta tem um cronômetro regressivo (visível no topo, ⏱), com o tempo definido pela
-  dificuldade escolhida. Fica vermelho nos últimos 3 segundos.
-- O cronômetro **pausa** assim que o jogador clica em "Revelar" manualmente — só corre enquanto
-  a pergunta está sem resposta.
-- **Se o tempo acabar antes de revelar**: a carta vira sozinha mostrando a resposta, aparece a
+- Cada pergunta tem um cronômetro regressivo (visível no topo, ⏱), com o tempo definido pela
+  dificuldade escolhida (o mesmo nos dois modos). Fica vermelho nos últimos 3 segundos.
+- O cronômetro **pausa** assim que o jogador responde — ao clicar em "Revelar" (Cartas) ou ao
+  escolher uma opção (Múltipla escolha). Só corre enquanto a pergunta está sem resposta.
+- **Se o tempo acabar antes de responder**: a resposta certa aparece sozinha (no modo Cartas a
+  carta vira; na Múltipla escolha a opção certa fica verde e as opções travam), junto com a
   mensagem "⏰ Tempo esgotado!" e um botão **Continuar**. O jogo espera o clique no botão (sem
   avançar sozinho) e, ao clicar, conta automaticamente como **erro** (perde 1 vida e aumenta a
-  prioridade da carta).
+  prioridade da pergunta).
 
 ---
 
@@ -155,7 +180,7 @@ Implementado em [js/score.js](js/score.js) (`criarPlacar`, `registrarErro`, `gan
 - **Sem persistência**: nada é salvo — ao fechar ou atualizar a página, o progresso da partida
   se perde. Não usa `localStorage`.
 - Sem som, sem conquistas/medalhas, sem modo multiplayer.
-- Sem conferência automática de resposta digitada (o jogo confia na autoavaliação do jogador).
+- Sem campo para digitar a resposta (no modo Cartas o jogo confia na autoavaliação do jogador).
 
 ---
 
@@ -167,7 +192,7 @@ jogo-tabuada/
 ├── css/
 │   └── style.css        # Visual, cores, animação de flip da carta
 └── js/
-    ├── cards.js          # Geração do baralho por operação e tabuada
+    ├── cards.js          # Baralho por operação/tabuada + opções da múltipla escolha
     ├── score.js           # Pontuação, vidas, sequência de acertos
     ├── game.js             # Config de dificuldade + sorteio da próxima carta
     └── app.js               # Liga tudo à interface (eventos, cronômetro, telas)
@@ -218,6 +243,7 @@ funcionalidade — tanto marcando itens como concluídos quanto acrescentando id
   novo só com as cartas erradas
 
 ### Experiência
+- ✅ Dois modos de jogo: Múltipla escolha e Cartas
 - ✅ Animação de virar a carta
 - ✅ Cronômetro por carta com botão "Continuar" após tempo esgotado
 - ⬜ Modo contra o relógio: responder o máximo de cartas possível dentro de um tempo total fixo
