@@ -49,6 +49,12 @@ Quantidade de vidas (corações) para a partida: **3, 6 ou 9** (3 é o padrão).
 velocidade com que cartas erradas voltam a aparecer, e a recuperação de vidas. Detalhes na
 seção 5.
 
+### 2.5 Tempo
+- 🐢 **Sem tempo** (selecionado por padrão) — sem cronômetro, o jogador pensa com calma.
+- ⏱ **Com tempo** — cada pergunta tem um cronômetro, com o tempo definido pela dificuldade.
+
+É independente da dificuldade (dá pra jogar, por exemplo, Médio sem tempo). Detalhes na seção 7.
+
 ---
 
 ## 3. Como as cartas são geradas por operação
@@ -113,7 +119,7 @@ Cada nível de dificuldade controla três coisas ([js/game.js](js/game.js), obje
 | 😰 Difícil | 7s | +4 | nunca recupera vida |
 
 - **Tempo por carta**: quanto tempo o cronômetro dá antes de considerar tempo esgotado
-  (seção 7).
+  (seção 7). Só vale quando a opção **Com tempo** está escolhida.
 - **Aumento de prioridade ao errar**: quanto maior, mais rápido aquela carta errada volta a
   aparecer (seção 6).
 - **Recuperação de vida**: a cada X acertos **consecutivos**, o jogador ganha 1 vida de volta
@@ -136,6 +142,16 @@ para a próxima rodada — quanto maior a prioridade, maior a chance ([js/game.j
 ---
 
 ## 7. Cronômetro e tempo esgotado
+
+O cronômetro é opcional (seção 2.5) e vem **desligado por padrão**: a criança ainda está
+aprendendo e precisa pensar, e com o tempo correndo ela ficava ansiosa e respondia com pressa,
+de qualquer jeito.
+
+- **Sem tempo**: o cronômetro **some da tela** (nem aparece parado, para não passar sensação de
+  pressa) e não existe tempo esgotado — só se perde vida respondendo errado. Todo o resto
+  (vidas, recuperação de vidas, repetição das erradas, pontuação) funciona igual.
+
+Com tempo:
 
 - Cada pergunta tem um cronômetro regressivo (visível no topo, ⏱), com o tempo definido pela
   dificuldade escolhida (o mesmo nos dois modos). Fica vermelho nos últimos 3 segundos.
@@ -246,6 +262,9 @@ funcionalidade — tanto marcando itens como concluídos quanto acrescentando id
 - ✅ Dois modos de jogo: Múltipla escolha e Cartas
 - ✅ Animação de virar a carta
 - ✅ Cronômetro por carta com botão "Continuar" após tempo esgotado
+- ✅ Opção de jogar sem tempo (padrão)
+- ⬜ Cronômetro que conta para cima, só para mostrar quanto tempo levou (sem punir), para a
+  criança ver a própria evolução
 - ⬜ Modo contra o relógio: responder o máximo de cartas possível dentro de um tempo total fixo
   (diferente do cronômetro por carta atual)
 - ⬜ Sons (acerto, erro, tempo esgotado, vitória)

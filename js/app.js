@@ -6,6 +6,7 @@ var estado = {
   placar: null,
   dificuldade: null,
   modo: "escolha",
+  comTempo: false,
   timerId: null,
   tempoRestante: 0,
   avancoId: null
@@ -21,6 +22,7 @@ var gradeTabuadas = document.getElementById("grade-tabuadas");
 var btnSelecionarTodas = document.getElementById("btn-selecionar-todas");
 var gradeVidas = document.getElementById("grade-vidas");
 var gradeDificuldade = document.getElementById("grade-dificuldade");
+var gradeTempo = document.getElementById("grade-tempo");
 var btnComecar = document.getElementById("btn-comecar");
 
 var placarPontos = document.getElementById("placar-pontos");
@@ -106,6 +108,11 @@ function dificuldadeEscolhida() {
   var selecionado = gradeDificuldade.querySelector("input[name=dificuldade]:checked");
   var chave = selecionado ? selecionado.value : "facil";
   return DIFICULDADES[chave];
+}
+
+function comTempoEscolhido() {
+  var selecionado = gradeTempo.querySelector("input[name=tempo]:checked");
+  return selecionado ? selecionado.value === "com" : false;
 }
 
 function iniciarCronometro() {
@@ -239,6 +246,9 @@ btnComecar.addEventListener("click", function () {
   estado.placar = criarPlacar(vidasEscolhidas());
   estado.dificuldade = dificuldadeEscolhida();
   estado.modo = modoEscolhido();
+  estado.comTempo = comTempoEscolhido();
+  // Sem tempo, o cronômetro some da tela para não passar nenhuma sensação de pressa.
+  cronometro.classList.toggle("escondido", !estado.comTempo);
   iniciarRodada();
   mostrarTela(telaJogo);
 });
@@ -272,7 +282,9 @@ function iniciarRodada() {
   botoesResposta.classList.add("escondido");
   placarPontos.textContent = estado.placar.pontos;
   atualizarCoracoes();
-  iniciarCronometro();
+  if (estado.comTempo) {
+    iniciarCronometro();
+  }
 
   requestAnimationFrame(function () {
     cardInner.classList.remove("sem-transicao");
