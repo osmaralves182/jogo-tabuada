@@ -39,7 +39,8 @@ Escolha única (não dá pra combinar operações na mesma partida):
 
 ### 2.2 Tabuadas
 Checkboxes de 1 a 10 — pode marcar quantas quiser. Existe um botão **"Selecionar todas"**.
-O botão **"Começar Jogo"** só é liberado depois de marcar pelo menos uma tabuada.
+O botão **"Começar Jogo"** só é liberado depois de marcar pelo menos uma tabuada — enquanto
+nenhuma estiver marcada, aparece o aviso "👆 Escolha pelo menos uma tabuada" logo acima dele.
 
 ### 2.3 Vidas
 Quantidade de vidas (corações) para a partida: **3, 6 ou 9** (3 é o padrão).
@@ -86,9 +87,9 @@ Os dois modos usam as mesmas perguntas, vidas, dificuldade, cronômetro, pontua�
 ### 4.1 Múltipla escolha
 - A pergunta aparece como **"Quanto é 7 × 8?"**, com **4 opções** de resposta logo abaixo.
 - Ao tocar numa opção, o cronômetro para, as opções travam e o jogo confere sozinho:
-  - a opção **certa fica verde**;
-  - se a escolhida estava errada, ela **fica vermelha** (e a certa continua verde, para a
-    criança ver qual era).
+  - a opção **certa fica verde, com ✓**;
+  - se a escolhida estava errada, ela **fica vermelha, com ✗** (e a certa continua verde, para
+    a criança ver qual era). Os símbolos ✓/✗ existem para quem não distingue verde de vermelho.
 - O jogo **avança sozinho** para a próxima pergunta: depois de 1 segundo no acerto, ou de
   2 segundos no erro (mais tempo para ver a resposta certa).
 - **Como as 3 opções erradas são escolhidas** ([js/cards.js](js/cards.js), `gerarOpcoes`):
@@ -183,11 +184,30 @@ Implementado em [js/score.js](js/score.js) (`criarPlacar`, `registrarErro`, `gan
 
 - **Acerto** = +1 ponto. **Erro** = +0 pontos (não tira ponto, só vida).
 - O jogo pode terminar de duas formas, com títulos diferentes na tela de resumo:
-  - **Encerrar** (botão sempre visível durante o jogo) → "🏁 Fim de jogo!"
+  - **Encerrar** (botão sempre visível durante o jogo) → "🏁 Fim de jogo!". Para um toque sem
+    querer não acabar com a partida, o primeiro toque só troca o botão para "Toque de novo para
+    sair" (volta ao normal sozinho depois de 3 segundos); a partida só termina no segundo toque.
   - **Vidas zeradas** → "💀 Game Over!"
 - Tela de resumo mostra: Pontuação, Acertos, Erros e Cartas treinadas (total de rodadas
-  respondidas), e um botão **"Jogar de novo"** que volta para a tela de seleção (mantém a
-  operação/vidas/dificuldade escolhidas anteriormente, mas exige marcar as tabuadas de novo).
+  respondidas).
+- **🧠 Treine mais**: se houve erros, o resumo lista as contas erradas na partida (das mais
+  erradas para as menos, ex: `7 × 9`, `7 × 6`), com um botão **"Praticar só essas"** que começa
+  na hora uma nova partida só com elas (do zero, com as mesmas opções de modo, vidas,
+  dificuldade e tempo). Sem nenhum erro, aparece "🌟 Você não errou nenhuma!".
+- **"Jogar de novo"** volta para a tela de seleção com **todas as escolhas mantidas**, inclusive
+  as tabuadas — basta tocar em "Começar Jogo" para repetir.
+
+---
+
+## 9.1 Acessibilidade
+
+- Cores de acerto (verde) e erro (vermelho) escuras o bastante para o texto branco por cima ter
+  contraste de leitura adequado (pelo menos 4,5:1).
+- Acerto e erro também indicados por ✓ e ✗, não só pela cor.
+- Contorno de foco visível para quem navega pelo teclado (tecla Tab).
+- Leitores de tela: os corações são lidos como "2 de 3 vidas", e o jogo anuncia "Certo!",
+  "Errado. A resposta é 49" ou "Tempo esgotado".
+- Quem configurou o aparelho para reduzir animações vê a carta trocar de lado sem o giro.
 
 ---
 
@@ -255,8 +275,8 @@ funcionalidade — tanto marcando itens como concluídos quanto acrescentando id
 - ⬜ Identificação automática das tabuadas/operações com mais erro
 - ⬜ Relatório de evolução entre partidas
 - ⬜ Recomendação do que estudar na próxima sessão
-- ⬜ Sessão de revisão: botão "Praticar só o que errei" ao fim da partida, montando um baralho
-  novo só com as cartas erradas
+- ✅ Sessão de revisão: lista "Treine mais" no resumo + botão "Praticar só essas", montando um
+  baralho novo só com as contas erradas
 
 ### Experiência
 - ✅ Dois modos de jogo: Múltipla escolha e Cartas
@@ -268,6 +288,15 @@ funcionalidade — tanto marcando itens como concluídos quanto acrescentando id
 - ⬜ Modo contra o relógio: responder o máximo de cartas possível dentro de um tempo total fixo
   (diferente do cronômetro por carta atual)
 - ⬜ Sons (acerto, erro, tempo esgotado, vitória)
-- ⬜ Responsividade para celular/tablet
+- ✅ Funciona no celular (publicado no GitHub Pages)
+- ⬜ Revisar o layout em tablet e com o celular deitado
 - ⬜ Modo para dois jogadores (turnos alternados ou cooperativo pai/filho)
 - ⬜ Temas visuais (cores/mascotes diferentes para o Dudu escolher)
+
+### Para decidir com o Dudu
+Sugestões de uma revisão de design, que dependem do gosto dele:
+- ⬜ Frases de feedback na tela ("Quase! 7 × 7 = 49", "Isso!", "Mandou bem!")
+- ⬜ Trocar o "💀 Game Over!" por algo mais leve (ex: "Acabaram as vidas! Você acertou 12 💪")
+- ⬜ Encurtar as perguntas da tela inicial (ex: "Quais tabuadas?")
+- ⬜ Agrupar vidas, dificuldade e tempo num bloco "Mais opções", para a tela inicial ficar menor
+- ⬜ Deixar uma tabuada já marcada ao abrir o jogo

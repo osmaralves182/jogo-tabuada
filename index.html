@@ -94,6 +94,7 @@
       </div>
     </div>
 
+    <p id="aviso-tabuada" class="aviso">👆 Escolha pelo menos uma tabuada</p>
     <button id="btn-comecar" class="botao-principal" disabled>Começar Jogo</button>
   </section>
 
@@ -106,7 +107,10 @@
       <span id="cronometro">⏱ 0</span>
     </div>
 
-    <div class="coracoes-topo" id="coracoes-topo"></div>
+    <div class="coracoes-topo" id="coracoes-topo" role="img"></div>
+
+    <!-- Anuncia para leitores de tela o que aconteceu (certo, errado, tempo esgotado) -->
+    <p id="anuncio" class="so-leitor" aria-live="polite"></p>
 
     <div class="cena-carta">
       <div class="card" id="card">
@@ -144,6 +148,14 @@
       <p>Erros: <strong id="resumo-erros">0</strong></p>
       <p>Cartas treinadas: <strong id="resumo-cartas">0</strong></p>
     </div>
+
+    <div id="resumo-revisao" class="resumo-revisao escondido">
+      <p>🧠 Treine mais:</p>
+      <div id="lista-revisao" class="lista-revisao"></div>
+      <button id="btn-praticar-erradas" class="botao-secundario">Praticar só essas</button>
+    </div>
+    <p id="resumo-sem-erros" class="escondido">🌟 Você não errou nenhuma!</p>
+
     <button id="btn-jogar-de-novo" class="botao-principal">Jogar de novo</button>
   </section>
 

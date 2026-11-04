@@ -9,7 +9,8 @@ var estado = {
   comTempo: false,
   timerId: null,
   tempoRestante: 0,
-  avancoId: null
+  avancoId: null,
+  confirmarEncerrarId: null
 };
 
 var telaSelecao = document.getElementById("tela-selecao");
@@ -24,9 +25,11 @@ var gradeVidas = document.getElementById("grade-vidas");
 var gradeDificuldade = document.getElementById("grade-dificuldade");
 var gradeTempo = document.getElementById("grade-tempo");
 var btnComecar = document.getElementById("btn-comecar");
+var avisoTabuada = document.getElementById("aviso-tabuada");
 
 var placarPontos = document.getElementById("placar-pontos");
 var coracoesTopo = document.getElementById("coracoes-topo");
+var anuncio = document.getElementById("anuncio");
 var cronometro = document.getElementById("cronometro");
 var mensagemTempo = document.getElementById("mensagem-tempo");
 var cardInner = document.getElementById("card-inner");
@@ -46,6 +49,10 @@ var resumoPontos = document.getElementById("resumo-pontos");
 var resumoAcertos = document.getElementById("resumo-acertos");
 var resumoErros = document.getElementById("resumo-erros");
 var resumoCartas = document.getElementById("resumo-cartas");
+var resumoRevisao = document.getElementById("resumo-revisao");
+var listaRevisao = document.getElementById("lista-revisao");
+var btnPraticarErradas = document.getElementById("btn-praticar-erradas");
+var resumoSemErros = document.getElementById("resumo-sem-erros");
 var btnJogarDeNovo = document.getElementById("btn-jogar-de-novo");
 
 function mostrarTela(tela) {
@@ -86,7 +93,9 @@ function tabuadasMarcadas() {
 }
 
 function atualizarBotaoComecar() {
-  btnComecar.disabled = tabuadasMarcadas().length === 0;
+  var nenhuma = tabuadasMarcadas().length === 0;
+  btnComecar.disabled = nenhuma;
+  avisoTabuada.classList.toggle("escondido", !nenhuma);
 }
 
 function modoEscolhido() {
@@ -153,6 +162,11 @@ function tempoEsgotado() {
   botoesResposta.classList.add("escondido");
   mensagemTempo.classList.remove("escondido");
   btnContinuar.classList.remove("escondido");
+  anunciar("Tempo esgotado. A resposta é " + estado.cartaAtual.resposta);
+}
+
+function anunciar(texto) {
+  anuncio.textContent = texto;
 }
 
 btnContinuar.addEventListener("click", function () {
@@ -168,6 +182,7 @@ function montarOpcoes() {
     var botao = document.createElement("button");
     botao.className = "botao-opcao";
     botao.textContent = numero;
+    botao.dataset.valor = numero;
     botao.addEventListener("click", function () {
       escolherOpcao(botao, numero);
     });
@@ -181,7 +196,7 @@ function montarOpcoes() {
 function marcarOpcaoCerta() {
   opcoesResposta.querySelectorAll(".botao-opcao").forEach(function (botao) {
     botao.disabled = true;
-    if (Number(botao.textContent) === estado.cartaAtual.resposta) {
+    if (Number(botao.dataset.valor) === estado.cartaAtual.resposta) {
       botao.classList.add("opcao-certa");
     }
   });
@@ -195,6 +210,7 @@ function escolherOpcao(botao, numero) {
   if (!acertou) {
     botao.classList.add("opcao-errada");
   }
+  anunciar(acertou ? "Certo!" : "Errado. A resposta é " + estado.cartaAtual.resposta);
 
   // Avança sozinho; no erro espera um pouco mais para dar tempo de ver a resposta certa.
   estado.avancoId = setTimeout(function () {
@@ -231,6 +247,9 @@ function atualizarCoracoes() {
     }
     coracoesTopo.appendChild(coracao);
   }
+
+  // Para leitores de tela: "2 de 3 vidas" em vez de "coração, coração, coração"
+  coracoesTopo.setAttribute("aria-label", estado.placar.vidas + " de " + estado.placar.vidasMax + " vidas");
 }
 
 btnSelecionarTodas.addEventListener("click", function () {
@@ -242,16 +261,21 @@ btnSelecionarTodas.addEventListener("click", function () {
 });
 
 btnComecar.addEventListener("click", function () {
-  estado.baralho = gerarBaralho(operacaoEscolhida(), tabuadasMarcadas());
+  iniciarPartida(gerarBaralho(operacaoEscolhida(), tabuadasMarcadas()));
+});
+
+function iniciarPartida(baralho) {
+  estado.baralho = baralho;
   estado.placar = criarPlacar(vidasEscolhidas());
   estado.dificuldade = dificuldadeEscolhida();
   estado.modo = modoEscolhido();
   estado.comTempo = comTempoEscolhido();
   // Sem tempo, o cronômetro some da tela para não passar nenhuma sensação de pressa.
   cronometro.classList.toggle("escondido", !estado.comTempo);
+  restaurarBotaoEncerrar();
   iniciarRodada();
   mostrarTela(telaJogo);
-});
+}
 
 function iniciarRodada() {
   var idAnterior = estado.cartaAtual ? estado.cartaAtual.id : null;
@@ -264,6 +288,7 @@ function iniciarRodada() {
   void cardInner.offsetWidth; // força o navegador a aplicar o "sem-transicao" antes de tirar a classe
 
   textoResposta.textContent = estado.cartaAtual.resposta;
+  anunciar("");
 
   if (estado.modo === "escolha") {
     perguntaPrefixo.classList.remove("escondido");
@@ -326,11 +351,27 @@ btnErrei.addEventListener("click", function () {
   responder(false);
 });
 
+// Primeiro toque só pede confirmação, para um toque sem querer não acabar com a partida.
 btnEncerrar.addEventListener("click", function () {
+  if (!btnEncerrar.classList.contains("confirmando")) {
+    btnEncerrar.classList.add("confirmando");
+    btnEncerrar.textContent = "Toque de novo para sair";
+    estado.confirmarEncerrarId = setTimeout(restaurarBotaoEncerrar, 3000);
+    return;
+  }
+
+  restaurarBotaoEncerrar();
   pararCronometro();
   cancelarAvanco();
   mostrarResumo("manual");
 });
+
+function restaurarBotaoEncerrar() {
+  clearTimeout(estado.confirmarEncerrarId);
+  estado.confirmarEncerrarId = null;
+  btnEncerrar.classList.remove("confirmando");
+  btnEncerrar.textContent = "Encerrar";
+}
 
 function mostrarResumo(motivo) {
   resumoTitulo.textContent = motivo === "gameover" ? "💀 Game Over!" : "🏁 Fim de jogo!";
@@ -338,16 +379,47 @@ function mostrarResumo(motivo) {
   resumoAcertos.textContent = estado.placar.acertos;
   resumoErros.textContent = estado.placar.erros;
   resumoCartas.textContent = estado.placar.cartasTreinadas;
+  mostrarRevisao();
   mostrarTela(telaResumo);
 }
 
-btnJogarDeNovo.addEventListener("click", function () {
-  var checkboxes = gradeTabuadas.querySelectorAll("input[type=checkbox]");
-  checkboxes.forEach(function (checkbox) {
-    checkbox.checked = false;
+// Lista as contas erradas na partida, das mais erradas para as menos.
+function cartasErradas() {
+  return estado.baralho
+    .filter(function (carta) {
+      return carta.erros > 0;
+    })
+    .sort(function (a, b) {
+      return b.erros - a.erros;
+    });
+}
+
+function mostrarRevisao() {
+  var erradas = cartasErradas();
+  listaRevisao.innerHTML = "";
+
+  erradas.forEach(function (carta) {
+    var item = document.createElement("span");
+    item.className = "item-revisao";
+    item.textContent = carta.operacao;
+    listaRevisao.appendChild(item);
   });
-  atualizarBotaoComecar();
+
+  resumoRevisao.classList.toggle("escondido", erradas.length === 0);
+  resumoSemErros.classList.toggle("escondido", erradas.length > 0 || estado.placar.cartasTreinadas === 0);
+}
+
+// Nova partida só com as contas erradas, começando do zero (mesmas opções de antes).
+btnPraticarErradas.addEventListener("click", function () {
+  var baralho = cartasErradas().map(function (carta) {
+    return Object.assign({}, carta, { acertos: 0, erros: 0, prioridade: 1 });
+  });
+  iniciarPartida(baralho);
+});
+
+btnJogarDeNovo.addEventListener("click", function () {
   mostrarTela(telaSelecao);
 });
 
 montarGradeTabuadas();
+atualizarBotaoComecar();
